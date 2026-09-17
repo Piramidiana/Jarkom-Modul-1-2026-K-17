@@ -25,8 +25,7 @@ Topologi terdiri dari satu router bernama **Lain**, tiga switch, lima client, da
 | Knights | eth0 | `10.72.3.2/24` | `10.72.3.1` |
 | Eiri | eth0 | `10.72.3.3/24` | `10.72.3.1` |
 
-> **[LETAKKAN SCREENSHOT 1 DI SINI]**  
-> Screenshot yang diperlukan: topologi GNS3 secara penuh. Pastikan nama semua perangkat dan label interface terlihat.
+<img width="959" height="405" alt="Screenshot 2026-09-17 163157" src="https://github.com/user-attachments/assets/0cbbe79c-84a1-4abe-9f5b-89b0745c62d8" />
 
 ## 2. Koneksi Router Lain ke Internet
 
@@ -42,8 +41,7 @@ ping -c 2 8.8.8.8
 
 Hasil ping ke `8.8.8.8` berhasil tanpa packet loss. Dengan demikian, router Lain sudah terhubung ke internet.
 
-> **[LETAKKAN SCREENSHOT 2 DI SINI]**  
-> Screenshot yang diperlukan: terminal Lain yang menampilkan IP `eth0`, default route, dan ping sukses ke `8.8.8.8`.
+<img width="495" height="288" alt="image" src="https://github.com/user-attachments/assets/61d17e05-c988-4d27-b495-991aff1cc3ba" />
 
 ## 3. Routing Antar-Subnet
 
@@ -55,8 +53,7 @@ sysctl -w net.ipv4.ip_forward=1
 
 Pengujian dilakukan dengan mengirim ping antarclient yang berada pada subnet berbeda. Semua pengujian berhasil dengan packet loss 0%.
 
-> **[LETAKKAN SCREENSHOT 3 DI SINI]**  
-> Screenshot yang diperlukan: hasil ping Alice ke client pada subnet `10.72.2.0/24` dan `10.72.3.0/24`.
+<img width="493" height="287" alt="image" src="https://github.com/user-attachments/assets/1b95fd46-31af-47e8-96c4-55e33750d373" />
 
 > **[LETAKKAN SCREENSHOT 4 DI SINI]**  
 > Screenshot yang diperlukan: hasil ping Chisa atau Knights ke client pada subnet lain.
