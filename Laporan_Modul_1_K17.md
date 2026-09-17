@@ -6,8 +6,8 @@
 |---|---|
 | Kelompok | K-17 |
 | Project GNS3 | K-17-MODUL-1 |
-| Anggota 1 | [Dian Piramidiana Rachmatika - 5027251031] |
-| Anggota 2 | [Jude Athala Yazid Sari - 5027251098] |
+| Anggota 1 | Dian Piramidiana Rachmatika - 5027251031 |
+| Anggota 2 | Jude Athala Yazid Sari - 5027251098 |
 
 ## 1. Topologi dan Pembagian Alamat IP
 
