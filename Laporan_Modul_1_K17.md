@@ -185,7 +185,8 @@ ssh-keygen -t ed25519 -f /root/.ssh/mika_admin_ed25519 -N '' -C 'mika_admin@Mika
 
 Hasil pembuatan pasangan kunci dapat dilihat pada screenshot berikut.
 
-![](assets/13-keygen-mika.png)
+<img width="500" height="116" alt="image" src="https://github.com/user-attachments/assets/af749c44-7d24-4b30-8910-8cd68220f718" />
+
 
 Selanjutnya, OpenSSH Server dipasang pada node Knights dan dibuat user `mika_admin`.
 
