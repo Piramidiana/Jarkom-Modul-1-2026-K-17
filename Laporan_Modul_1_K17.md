@@ -57,9 +57,7 @@ Pengujian dilakukan dengan mengirim ping antarclient yang berada pada subnet ber
 
 <img width="413" height="231" alt="Screenshot 2026-09-17 180643" src="https://github.com/user-attachments/assets/25cc94dd-9627-4400-ba78-791c237b63c0" />
 
-## 4. [Judul Soal Nomor 4]
-
-**Dikerjakan oleh anggota kelompok lain.**
+## 4. Konfigurasi NAT dan DNS Clien
 
 [Tuliskan konfigurasi yang dilakukan dan hasil pengujiannya secara singkat.]
 
