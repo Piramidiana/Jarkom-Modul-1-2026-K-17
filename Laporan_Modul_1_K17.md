@@ -55,8 +55,7 @@ Pengujian dilakukan dengan mengirim ping antarclient yang berada pada subnet ber
 
 <img width="493" height="287" alt="image" src="https://github.com/user-attachments/assets/1b95fd46-31af-47e8-96c4-55e33750d373" />
 
-> **[LETAKKAN SCREENSHOT 4 DI SINI]**  
-> Screenshot yang diperlukan: hasil ping Chisa atau Knights ke client pada subnet lain.
+<img width="413" height="231" alt="Screenshot 2026-09-17 180643" src="https://github.com/user-attachments/assets/25cc94dd-9627-4400-ba78-791c237b63c0" />
 
 ## 4. [Judul Soal Nomor 4]
 
