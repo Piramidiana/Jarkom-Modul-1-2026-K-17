@@ -10,8 +10,8 @@
 | Anggota 2 | Jude Athala Yazid Sari - 5027251098 |
 
 ## 1. Topologi dan Pembagian Alamat IP
+Untuk mempersiapkan pembangunan The Wired, Lain yang berperan sebagai Router membuat tiga Switch/Gateway: Switch 1 menuju dua Entitas yaitu Alice dan Mika, Switch 2 menuju Chisa, sedangkan Switch 3 menuju Knights dan Eiri. Kelima Entitas tersebut dikonfigurasi sebagai Client di GNS3. [GUNAKAN PREFIX IP MASING-MASING KELOMPOK]
 
-Topologi terdiri dari satu router bernama **Lain**, tiga switch, lima client, dan satu NAT. Router Lain menghubungkan ketiga subnet dan jaringan internet.
 
 | Perangkat | Interface | Alamat IP | Gateway |
 |---|---|---|---|
@@ -28,6 +28,7 @@ Topologi terdiri dari satu router bernama **Lain**, tiga switch, lima client, da
 <img width="959" height="405" alt="Screenshot 2026-09-17 163157" src="https://github.com/user-attachments/assets/0cbbe79c-84a1-4abe-9f5b-89b0745c62d8" />
 
 ## 2. Koneksi Router Lain ke Internet
+Karena menurut Lain pada saat itu The Wired masih terisolasi dari dunia luar, konfigurasikan router Lain agar dapat tersambung langsung ke jaringan internet publik melalui NAT/DHCP pada interface eth0.
 
 Interface `eth0` pada router Lain memperoleh alamat IP melalui DHCP dari NAT1. Hasil pengujian menunjukkan bahwa router dapat menjangkau gateway NAT dan internet publik.
 
@@ -44,6 +45,7 @@ Hasil ping ke `8.8.8.8` berhasil tanpa packet loss. Dengan demikian, router Lain
 <img width="495" height="288" alt="image" src="https://github.com/user-attachments/assets/61d17e05-c988-4d27-b495-991aff1cc3ba" />
 
 ## 3. Routing Antar-Subnet
+Setelah router Lain terhubung ke internet, pastikan seluruh Entitas (Client) di bawah Switch 1, Switch 2, dan Switch 3 dapat saling terhubung dan berkomunikasi satu sama lain melalui konfigurasi routing.
 
 IP forwarding diaktifkan pada router Lain agar seluruh client pada Switch1, Switch2, dan Switch3 dapat saling berkomunikasi.
 
@@ -83,6 +85,8 @@ Pengujian dilakukan dengan mengirim ping antarclient yang berada pada subnet ber
 > Screenshot yang diperlukan: [isi sesuai bukti hasil pekerjaan nomor 6].
 
 ## 7. Konfigurasi FTP Server Chisa
+Chisa memutuskan mendirikan FTP Server pada node miliknya dengan shared folder di /var/wired/data. Terapkan kebijakan akses: user alice (hak akses read & write), user mika (dibatasi read-only), dan user eiri (dibatasi tanpa izin akses / blacklist). Buktikan konfigurasi dengan membuat file signal_alice.txt dari user alice, dan buktikan penolakan akses saat user eiri mencoba login.
+
 
 FTP Server dipasang pada node Chisa menggunakan vsFTPd. Folder yang dibagikan adalah `/var/wired/data`. Kebijakan akses yang diterapkan adalah:
 
@@ -92,16 +96,16 @@ FTP Server dipasang pada node Chisa menggunakan vsFTPd. Folder yang dibagikan ad
 
 Alice berhasil mengunggah `signal_alice.txt`. File tersebut tersimpan di server dengan pemilik `alice:wiredftp`. Percobaan login Eiri ditolak dengan respons `530 Permission denied`.
 
-> **[LETAKKAN SCREENSHOT 7A DI SINI]**  
-> Screenshot yang diperlukan: terminal Alice ketika upload `signal_alice.txt` berhasil dan muncul jumlah byte yang ditransfer.
+<img width="507" height="72" alt="image" src="https://github.com/user-attachments/assets/cc424c23-ee3e-4ffd-aff5-b9cb2c868439" />
 
-> **[LETAKKAN SCREENSHOT 7B DI SINI]**  
-> Screenshot yang diperlukan: terminal Chisa yang menampilkan `ls -l /var/wired/data` dan isi `signal_alice.txt`.
+<img width="383" height="77" alt="image" src="https://github.com/user-attachments/assets/3a793b5d-a05b-42e2-b215-b990af954bc1" />
 
-> **[LETAKKAN SCREENSHOT 7C DI SINI]**  
-> Screenshot yang diperlukan: terminal Eiri yang menampilkan penolakan `530 Permission denied`.
+
+<img width="514" height="139" alt="image" src="https://github.com/user-attachments/assets/e8e90158-f3fc-4016-9aac-ced8bdf48071" />
+
 
 ## 8. Upload Laporan Knights dan Analisis FTP
+Kelompok rahasia Knights perlu mengirimkan dokumen laporan intelijen ke FTP Server Chisa. Lakukan koneksi FTP client dari node Knights ke FTP Server Chisa menggunakan akun alice. Upload file berikut (link file). Analisis sesi Wireshark dan sebutkan: perintah FTP untuk upload (STOR), kode status sukses server (226), dan port data TCP yang dinegosiasikan pada mode PASV.
 
 Knights terhubung ke FTP Server Chisa menggunakan akun Alice. File `knights_report.txt` berhasil diunggah sebesar 1087 bytes.
 
@@ -119,13 +123,14 @@ Port data PASV dihitung sebagai berikut:
 
 Jadi, port data TCP yang digunakan untuk upload adalah **30007**.
 
-> **[LETAKKAN SCREENSHOT 8A DI SINI]**  
-> Screenshot yang diperlukan: terminal Knights yang menampilkan upload `knights_report.txt` berhasil.
+<img width="509" height="201" alt="image" src="https://github.com/user-attachments/assets/22eb8631-4b1d-419e-8ba0-95730bf43d1a" />
 
-> **[LETAKKAN SCREENSHOT 8B DI SINI]**  
-> Screenshot yang diperlukan: Wireshark dengan filter FTP yang memperlihatkan `PASV`, respons `227`, `STOR knights_report.txt`, dan `226 Transfer complete`.
+
+<img width="795" height="565" alt="Screenshot 2026-09-16 232956" src="https://github.com/user-attachments/assets/b5fdb1ba-cb60-4b73-b7eb-b5f8f59e0c01" />
+
 
 ## 9. Akses Read-Only Mika
+Mika mengakses dokumen Protokol Tujuh di (link file) dari FTP Server Chisa. Dari node Mika, unduh file tersebut menggunakan akun mika. Setelah itu, buktikan pembatasan read-only dengan mencoba mengunggah file baru dari akun mika, dan tunjukkan pesan error respon server (error 550 Permission denied) saat mika mencoba melakukan upload
 
 Mika login ke FTP Server Chisa menggunakan akun `mika`. File `protocol7_manifesto.txt` berhasil diunduh sebesar 1738 bytes dan isinya dapat dibaca.
 
@@ -137,8 +142,8 @@ Setelah itu, Mika mencoba mengunggah `mika_upload_test.txt`. Server menolak uplo
 
 Hasil tersebut membuktikan bahwa akun Mika hanya mempunyai akses baca dan download.
 
-> **[LETAKKAN SCREENSHOT 9 DI SINI]**  
-> Screenshot yang diperlukan: terminal Mika yang memperlihatkan download berhasil, isi awal file, dan percobaan upload yang ditolak dengan `550 Permission denied`.
+<img width="494" height="285" alt="Screenshot 2026-09-16 233704" src="https://github.com/user-attachments/assets/2c39a5ec-0c32-431b-bbc6-23456d4e705b" />
+
 
 ## 10. Uji Latensi Knights ke Chisa
 
