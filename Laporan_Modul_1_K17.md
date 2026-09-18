@@ -221,7 +221,8 @@ ssh -i /root/.ssh/mika_admin_ed25519 \
 
 Koneksi berhasil tanpa meminta password. Perintah `whoami` menghasilkan `mika_admin` dan `hostname` menghasilkan `Knights`.
 
-![](assets/13-login-ssh.png)
+<img width="496" height="443" alt="image" src="https://github.com/user-attachments/assets/bd14aed7-4007-44a2-930b-12721be97398" />
+
 
 Pada saat koneksi berlangsung dilakukan capture menggunakan Wireshark. Filter yang digunakan adalah:
 
@@ -231,7 +232,8 @@ ssh
 
 Capture memperlihatkan Protocol Version Exchange `SSH-2.0-OpenSSH_10.2`, paket Client dan Server `Key Exchange Init`, proses `PQ/T Hybrid Key Exchange`, `New Keys`, dan paket-paket terenkripsi.
 
-![](assets/13-wireshark-ssh.png)
+<img width="959" height="599" alt="image" src="https://github.com/user-attachments/assets/297483af-b5e2-4232-bdb6-634f785f3910" />
+
 
 Username, private key, dan isi sesi tidak terlihat karena SSH membuat session key melalui proses key exchange. Setelah paket `New Keys`, komunikasi dilindungi oleh enkripsi. Autentikasi public key menggunakan tanda tangan digital sehingga private key tidak pernah dikirim melalui jaringan. Hal tersebut berbeda dengan Telnet yang mengirimkan username, password, dan isi komunikasi dalam bentuk teks terbuka.
 
@@ -253,7 +255,8 @@ File capture dibuka melalui Wireshark. Percobaan login yang berhasil ditemukan p
 tcp.port == 49203 && http
 ```
 
-![](assets/14-http-request-response.png)
+<img width="797" height="568" alt="Screenshot 2026-09-17 134718" src="https://github.com/user-attachments/assets/37d619cd-7d18-48bd-9a32-88e42ed3123f" />
+
 
 Paket POST menuju `/login.php` berasal dari IP `172.26.7.50` menuju `172.26.7.100` pada port `8080`. Pada bagian **HTML Form URL Encoded** ditemukan username dan password berikut:
 
@@ -262,11 +265,13 @@ username=lain_admin
 password=wired_pr0tocol_7
 ```
 
-![](assets/14-http-credentials.png)
+<img width="536" height="310" alt="Screenshot 2026-09-17 134939" src="https://github.com/user-attachments/assets/11b873c6-a9bf-40ea-b082-d334828765d2" />
+
 
 Response server memberikan status `HTTP/1.1 200 OK`. Pada response header ditemukan informasi web server `Apache/2.4.62`.
 
-![](assets/14-http-server.png)
+<img width="379" height="372" alt="Screenshot 2026-09-17 135100" src="https://github.com/user-attachments/assets/a7a847bb-2a79-4704-9894-9caec06ce5fb" />
+
 
 Temuan kemudian divalidasi menggunakan perintah berikut:
 
@@ -274,7 +279,8 @@ Temuan kemudian divalidasi menggunakan perintah berikut:
 nc 10.4.89.246 3401
 ```
 
-![](assets/14-validation.png)
+<img width="623" height="560" alt="Screenshot 2026-09-17 140744" src="https://github.com/user-attachments/assets/de17de65-5f3f-44cf-9b38-09ef6d24bb8b" />
+
 
 | Pertanyaan | Jawaban |
 | ---------- | ------- |
@@ -294,7 +300,8 @@ usb.bDescriptorType == 1
 
 Pada bagian **DEVICE DESCRIPTOR** ditemukan bahwa perangkat merupakan Logitech Keyboard K120 dengan Vendor ID `0x046d` dan Product ID `0xc31c`.
 
-![](assets/15-usb-descriptor.png)
+<img width="794" height="568" alt="Screenshot 2026-09-17 140848" src="https://github.com/user-attachments/assets/8770541e-d477-4b6b-8baf-1d36d87ab498" />
+
 
 Selanjutnya paket dari perangkat keyboard difilter menggunakan:
 
@@ -304,7 +311,7 @@ usb.device_address == 7
 
 Detail paket menunjukkan USB bus ID `2`, device address `7`, endpoint `0x81`, dan transfer type `URB_INTERRUPT`. Salah satu data keystroke yang ditemukan adalah `02001a0000000000`. Byte `02` merupakan modifier Shift dan keycode `1a` merupakan tombol W sehingga menghasilkan huruf kapital `W`.
 
-![](assets/15-usb-device-address.png)
+<img width="959" height="599" alt="Screenshot 2026-09-17 141234" src="https://github.com/user-attachments/assets/45be7002-c817-4c39-9ff2-9ec29c69f65a" />
 
 Setelah seluruh keycode HID disusun, pesan yang diketikkan adalah:
 
@@ -318,7 +325,8 @@ Hasil tersebut divalidasi menggunakan perintah berikut:
 nc 10.4.89.246 3402
 ```
 
-![](assets/15-validation.png)
+<img width="544" height="254" alt="15_validasi_socket" src="https://github.com/user-attachments/assets/0e635c74-7b35-4d08-961b-26a1df019b0f" />
+
 
 | Pertanyaan | Jawaban |
 | ---------- | ------- |
@@ -339,11 +347,12 @@ ip.addr == 185.234.72.19 && tcp.port == 25
 
 Paket email kemudian dibuka menggunakan **Follow → TCP Stream**. Pesan ancaman berada pada TCP stream 6. Bagian awal stream memperlihatkan pengirim `attacker@darkwired.net`, penerima `victim@protocol7.co.jp`, password `pr0tocol_7_user`, dan jenis malware `ransomware`.
 
-![](assets/19-smtp-stream-email.png)
+<img width="666" height="575" alt="19_smtp_stream_email" src="https://github.com/user-attachments/assets/61e25738-2aa4-4f05-8264-52949249800e" />
+
 
 Pada bagian selanjutnya, penyerang memberikan waktu `72 hours (3 days)` untuk membayar. Pada bagian bawah email juga ditemukan `MailClientID: 7719980706`.
 
-![](assets/19-smtp-stream-deadline.png)
+<img width="668" height="596" alt="19_smtp_stream_threat" src="https://github.com/user-attachments/assets/4884e34e-a153-4b50-a4db-5d1816a9288a" />
 
 Karena SMTP digunakan tanpa enkripsi, seluruh isi email dapat dibaca sebagai teks terbuka melalui Follow TCP Stream. Hal ini menunjukkan bahwa protokol tanpa enkripsi tidak mampu menjaga kerahasiaan pesan ketika trafik jaringan berhasil disadap.
 
@@ -353,7 +362,8 @@ Temuan kemudian divalidasi menggunakan perintah berikut:
 nc 10.4.89.246 3406
 ```
 
-![](assets/19-validation.png)
+<img width="668" height="292" alt="19_validasi_socket" src="https://github.com/user-attachments/assets/69412f4e-6b16-43f8-b84d-5802f89834fe" />
+
 
 | Pertanyaan | Jawaban |
 | ---------- | ------- |
