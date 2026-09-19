@@ -108,25 +108,50 @@ Untuk memastikan koneksi berhasil, dilakukan pengujian menggunakan ping ke alama
 ping -c 4 8.8.8.8
 ping -c 4 google.com
 ```
-> Screenshot yang diperlukan: [isi sesuai bukti hasil pekerjaan nomor 4].
+<img width="1022" height="1107" alt="4_readme" src="https://github.com/user-attachments/assets/df3168bc-1384-480b-a60f-09f10f738295" />
 
 ## 5. [Judul Soal Nomor 5]
 
-**Dikerjakan oleh anggota kelompok lain.**
+Tujuan: Konfigurasi jaringan dibuat tetap ada setelah node di-restart, dan dibuat script kecil untuk mengecek interface dan tabel NAT di Router Lain.
 
-[Tuliskan konfigurasi yang dilakukan dan hasil pengujiannya secara singkat.]
+Script verifikasi: /root/cek_status.sh dibuat di Router Lain. Isinya menampilkan ip -br a (ringkasan interface) dan iptables -t nat -L -v -n (tabel NAT). Script diberi izin eksekusi dengan chmod +x, lalu diuji sebelum reboot.
 
-> **[LETAKKAN SCREENSHOT NOMOR 5 DI SINI]**  
-> Screenshot yang diperlukan: [isi sesuai bukti hasil pekerjaan nomor 5].
+Penyimpanan konfigurasi:
 
-## 6. [Judul Soal Nomor 6]
+IP interface ditulis di /etc/network/interfaces (contoh eth1: 10.4.89.1, netmask 255.255.255.248).
+Aturan iptables disimpan dengan iptables-save > /etc/iptables/rules.v4.
+IP forwarding ditambahkan ke /etc/sysctl.conf (net.ipv4.ip_forward=1).
 
-**Dikerjakan oleh anggota kelompok lain.**
+Pengujian: Node di-restart, lalu bash /root/cek_status.sh dijalankan lagi untuk memastikan konfigurasi masih ada.
 
-[Tuliskan konfigurasi yang dilakukan dan hasil pengujiannya secara singkat.]
+<img width="1176" height="921" alt="5_readme" src="https://github.com/user-attachments/assets/ea1b564d-2992-44e8-a465-de765d95559c" />
 
-> **[LETAKKAN SCREENSHOT NOMOR 6 DI SINI]**  
-> Screenshot yang diperlukan: [isi sesuai bukti hasil pekerjaan nomor 6].
+
+Nomor 6 — Traffic Generator & Filter Wireshark
+Tujuan
+
+Pada percobaan ini, traffic jaringan dibuat dari node Mika. Traffic tersebut kemudian ditangkap menggunakan Wireshark dan difilter untuk melihat paket DNS dan ICMP.
+
+Menjalankan Traffic Generator di Mika
+
+Script dibuat dan dijalankan dari direktori /root.
+
+cd /root
+
+nano traffic_gen.sh
+
+chmod +x traffic_gen.sh
+
+bash /root/traffic_gen.sh
+Capture di Wireshark
+
+Capture pada interface Mika dilakukan sebelum script dijalankan agar traffic yang dihasilkan dapat tertangkap.
+
+Filter yang digunakan:
+
+dns || icmp
+
+<img width="973" height="1098" alt="6_readme" src="https://github.com/user-attachments/assets/de551542-e190-4892-9bf8-42bcccb5cdab" />
 
 ## 7. Konfigurasi FTP Server Chisa
 Chisa memutuskan mendirikan FTP Server pada node miliknya dengan shared folder di /var/wired/data. Terapkan kebijakan akses: user alice (hak akses read & write), user mika (dibatasi read-only), dan user eiri (dibatasi tanpa izin akses / blacklist). Buktikan konfigurasi dengan membuat file signal_alice.txt dari user alice, dan buktikan penolakan akses saat user eiri mencoba login.
@@ -242,6 +267,8 @@ Klik kanan paket → Follow → TCP Stream.
 
 Hasil
 
+
+
 Kredensial plaintext kelihatan jelas (phantom_user, wired_ghost), termasuk pola karakter dobel (local echo + remote echo dari server).
 
 Soal 12 — Port Scanning dengan Netcat
@@ -279,6 +306,9 @@ Connection to 10.4.89.18 80 port [tcp/http] succeeded!
 nc: connect to 10.4.89.18 port 7777 (tcp) failed: Connection refused
 
 Filter Wireshark:
+
+<img width="957" height="599" alt="12  buktii" src="https://github.com/user-attachments/assets/a053be3d-eaf9-4bdb-af3d-ad459e2f32c4" />
+
 
 tcp.flags.syn==1
 Port 22 & 80 → balasan Knights: Flags: SYN, ACK
@@ -470,6 +500,8 @@ Verifikasi silang: ukuran file disebut 2x di capture — respons SIZE (213 52428
 
 Catatan: ada percobaan login lain yang gagal (USER guest → 530 Login incorrect), tidak dipakai sebagai jawaban.
 
+<img width="949" height="599" alt="16 Buktii" src="https://github.com/user-attachments/assets/db93f9e8-c7b3-4e90-9805-58575b3e8cde" />
+
 Validasi
 bash
 nc 10.4.89.250 3403
@@ -490,11 +522,14 @@ Cari paket response → baris pertama (HTTP/1.1 200 OK dsb) → kode status
 Verifikasi: File → Export Objects → HTTP
 Temuan
 
+<img width="1919" height="1195" alt="17-validation png" src="https://github.com/user-attachments/assets/29cbad79-79dd-45b1-b842-4a0d22a68e8f" />
+
+
 Validasi
 bash
 nc 10.4.89.250 3404
 
-Soal 18 — Analisis SMB Transfer (wired_smb_transfer.pcapng)
+Soal 18. — Analisis SMB Transfer (wired_smb_transfer.pcapng)
 Tujuan
 
 Temukan protokol yang dieksploitasi, IP pengirim & penerima, folder tujuan, nama file malware.
@@ -508,7 +543,8 @@ Filter:
 
 Temuan
 
-[isi setelah dianalisis: protokol, IP pengirim, IP penerima, folder tujuan, nama file]
+<img width="1513" height="1118" alt="18-validation png" src="https://github.com/user-attachments/assets/c67fa411-f989-4da5-aef5-654441b68178" />
+
 
 Validasi
 bash
@@ -553,18 +589,38 @@ nc 10.4.89.246 3406
 | Validasi socket | Berhasil |
 
 Soal 20 — Analisis & Dekripsi TLS (wired_tls_decrypt.pcapng)
-Tujuan
 
-Dekripsi trafik TLS pakai keylog file. Temukan versi TLS, SNI, IP server, User-Agent, HTTP method+path tersembunyi.
+Nomor 20 — Dekripsi TLS dengan Keylog
 
-Langkah
-Buka wired_tls_decrypt.pcapng di Wireshark
-Setup keylog: Edit → Preferences → Protocols → TLS → (Pre)-Master-Secret log filename → browse ke keyslogfile.txt → OK
-Cek dekripsi berhasil: filter http — kalau muncul paket, dekripsi sukses
-Versi TLS: filter tls.handshake.type == 1 (Client Hello) → expand → field Version
-SNI: masih di Client Hello yang sama → expand Extension: server_name → Server Name
-IP server: kolom Destination pada paket Client Hello yang sama
-User-Agent, method, path: filter http.request → expand Hypertext Transfer Protocol → baris GET /path HTTP/1.1 (method+path) dan User-Agent:
+Pada percobaan ini, traffic TLS dianalisis menggunakan file keylog agar informasi yang sebelumnya terenkripsi dapat dibaca oleh Wireshark.
+
+Konfigurasi Keylog
+
+Pengaturan dilakukan melalui:
+
+Edit → Preferences → Protocols → TLS → (Pre)-Master-Secret log filename
+
+Kemudian diarahkan ke:
+
+keyslogfile.txt
+Filter Wireshark
+tls.handshake.type == 1
+http.request
+Informasi yang Dicari
+
+Setelah proses dekripsi berhasil, informasi yang diperiksa meliputi:
+
+Versi TLS
+SNI (server_name)
+IP server
+User-Agent
+HTTP method
+HTTP path
+Validasi
+nc [IP_Group] 3407
+
+<img width="1804" height="1155" alt="20-validation png" src="https://github.com/user-attachments/assets/7bf21c19-918f-4681-9136-3dbf7b229895" />
+
 
 ## Kesimpulan
 
