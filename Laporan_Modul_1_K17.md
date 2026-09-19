@@ -63,11 +63,51 @@ Pengujian dilakukan dengan mengirim ping antarclient yang berada pada subnet ber
 
 Pada percobaan ini, semua client yaitu Alice, Mika, Chisa, Knights, dan Eiri dikonfigurasi agar dapat mengakses internet melalui NAT yang terdapat pada Router Lain.
 
+### Konfigurasi pada Router Lain
+
 Konfigurasi IP dilakukan pada masing-masing interface yang terhubung ke client. Setelah itu, IP forwarding diaktifkan agar Router Lain dapat meneruskan paket dari jaringan client ke internet.
 
-[Tuliskan konfigurasi yang dilakukan dan hasil pengujiannya secara singkat.]
+```bash
+ip addr add 10.4.89.1/29 dev eth1
+ip addr add 10.4.89.9/29 dev eth2
+ip addr add 10.4.89.17/29 dev eth3
 
-> **[LETAKKAN SCREENSHOT NOMOR 4 DI SINI]**  
+sysctl -w net.ipv4.ip_forward=1
+
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT
+iptables -A FORWARD -i eth0 -o eth1 -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth0 -j ACCEPT
+iptables -A FORWARD -i eth0 -o eth2 -j ACCEPT
+iptables -A FORWARD -i eth3 -o eth0 -j ACCEPT
+iptables -A FORWARD -i eth0 -o eth3 -j ACCEPT
+```
+### Verifikasi
+
+Setelah konfigurasi selesai, dilakukan pengecekan untuk memastikan interface, aturan NAT, aturan forwarding, dan IP forwarding sudah aktif.
+
+```bash
+ip -br a
+iptables -t nat -L -v -n
+iptables -L FORWARD -v -n
+sysctl net.ipv4.ip_forward
+```
+### Konfigurasi pada Client
+
+Setiap client diberikan IP sesuai dengan subnet masing-masing dan menggunakan IP Router Lain sebagai gateway.
+```bash
+ip addr add <IP_CLIENT>/29 dev eth0
+ip route add default via <IP_GATEWAY_LAIN>
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+```
+### Verifikasi pada Client
+
+Untuk memastikan koneksi berhasil, dilakukan pengujian menggunakan ping ke alamat IP publik dan domain.
+
+```bash
+ping -c 4 8.8.8.8
+ping -c 4 google.com
+```
 > Screenshot yang diperlukan: [isi sesuai bukti hasil pekerjaan nomor 4].
 
 ## 5. [Judul Soal Nomor 5]
@@ -150,32 +190,99 @@ Hasil tersebut membuktikan bahwa akun Mika hanya mempunyai akses baca dan downlo
 
 
 ## 10. Uji Latensi Knights ke Chisa
+Soal 10 — Uji Latensi Ping (Knights → Chisa)
+Tujuan
 
-Knights mengirim 77 paket ICMP ke Chisa dengan payload 128 bytes dan interval 0,3 detik.
+Ping 77 paket, payload 128 byte, interval 0.3 detik, dari Knights ke Chisa. Analisis ICMP Type/Code, packet loss, RTT.
 
-```bash
-ping -c 77 -s 128 -i 0.3 10.72.2.2
-```
+Langkah & Syntax
 
-Hasil analisis:
+IP Chisa (dicek dari node): 10.4.89.10
 
-| Parameter | Hasil |
-|---|---|
-| ICMP Echo Request | Type 8, Code 0 |
-| ICMP Echo Reply | Type 0, Code 0 |
-| Paket dikirim | 77 |
-| Paket diterima | [Isi dari hasil ping] |
-| Packet loss | [Isi dari hasil ping] |
-| RTT minimum | [Isi] ms |
-| RTT rata-rata | [Isi] ms |
-| RTT maksimum | [Isi] ms |
+Capture dulu, baru jalankan dari Knights:
 
-> **[LETAKKAN SCREENSHOT 10A DI SINI]**  
-> Screenshot yang diperlukan: terminal Knights yang menampilkan perintah ping dan bagian akhir statistik 77 paket.
+bash
+ping -c 77 -s 128 -i 0.3 10.4.89.10
+Hasil
+Length paket 170 bytes (konsisten payload 128 byte + header)
+Interval antar paket konsisten ±0.3 detik
+Filter Wireshark: icmp
+Echo Request → Type 8, Code 0
+Echo Reply → Type 0, Code 0
+Statistik ping: packet loss & RTT (min/avg/max) dari output terminal
 
-> **[LETAKKAN SCREENSHOT 10B DI SINI]**  
-> Screenshot yang diperlukan: Wireshark yang menampilkan ICMP Echo Request dan Echo Reply. Buka detail ICMP agar nilai Type dan Code terlihat.
+Soal 11 — Kelemahan Telnet
+Tujuan
 
+Buktikan Telnet mengirim kredensial plaintext. Akun phantom_user/wired_ghost di Chisa, login dari Eiri, capture Wireshark.
+
+Langkah & Syntax
+
+Di Chisa (Alpine):
+
+bash
+apk add busybox-extras
+telnetd -l /bin/login
+netstat -tulnp | grep 23
+adduser phantom_user
+# password: wired_ghost
+
+Dari Eiri (capture dulu di Wireshark, baru login):
+
+bash
+telnet 10.4.89.10
+
+Login phantom_user / wired_ghost, jalankan whoami, ls, lalu exit.
+
+Filter Wireshark:
+
+telnet
+
+Klik kanan paket → Follow → TCP Stream.
+
+Hasil
+
+Kredensial plaintext kelihatan jelas (phantom_user, wired_ghost), termasuk pola karakter dobel (local echo + remote echo dari server).
+
+Soal 12 — Port Scanning dengan Netcat
+Tujuan
+
+Dari Alice, scan port 22 & 80 (harus terbuka) dan 7777 (harus tertutup) di Knights. Bandingkan TCP flag di Wireshark.
+
+Langkah & Syntax
+
+Di Knights (Alpine, fix DNS dulu):
+
+bash
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+apk update
+apk add openssh
+ssh-keygen -A
+/usr/sbin/sshd
+
+apk add busybox-extras
+mkdir -p /var/www
+echo "Knights Node" > /var/www/index.html
+httpd -h /var/www -p 80
+
+netstat -tulnp
+
+Dari Alice (capture dulu di Wireshark, baru scan):
+
+bash
+nc -zv 10.4.89.18 22
+nc -zv 10.4.89.18 80
+nc -zv 10.4.89.18 7777
+Hasil
+Connection to 10.4.89.18 22 port [tcp/ssh] succeeded!
+Connection to 10.4.89.18 80 port [tcp/http] succeeded!
+nc: connect to 10.4.89.18 port 7777 (tcp) failed: Connection refused
+
+Filter Wireshark:
+
+tcp.flags.syn==1
+Port 22 & 80 → balasan Knights: Flags: SYN, ACK
+Port 7777 → balasan Knights: Flags: RST, ACK
 
 13. Lain memerintahkan agar administrasi jarak jauh menggunakan SSH secara aman tanpa password. Install OpenSSH server pada node Knights, buat pasangan kunci SSH (`ssh-keygen`) pada node Mika untuk user `mika_admin`, dan konfigurasikan public key authentication (`PasswordAuthentication no`). Lakukan koneksi SSH dari node Mika ke node Knights, tangkap sesi menggunakan Wireshark, identifikasi paket Protocol Version Exchange dan Key Exchange, serta jelaskan mengapa kredensial tidak terlihat dalam bentuk teks terbuka seperti pada Telnet.
 
@@ -341,6 +448,72 @@ nc 10.4.89.246 3402
 | Pesan rahasia | `Wired_Protocol_7_is_alive_2026` |
 | Validasi socket | Berhasil |
 
+Soal 16 — Analisis FTP Theft (wired_ftp_theft.pcap)
+Tujuan
+
+Dari file capture, temukan IP server FTP penyerang, banner, kredensial, dan ukuran file malware.
+
+Langkah
+Buka file di Wireshark (File → Open)
+Filter tcp.flags.syn==1 untuk cari koneksi ke port 21
+Filter ftp untuk baca banner, USER/PASS, dan perintah RETR
+File → Export Objects → FTP-DATA untuk verifikasi ukuran file
+Temuan
+Yang dicari	Jawaban
+IP Server FTP	198.51.100.7
+Banner	Welcome to Wired FTP Server (vsftpd 3.0.5)
+Username	knights_agent
+Password	N4v1_s3cur3_2026
+Ukuran file knights_payload.exe	524288 bytes
+
+Verifikasi silang: ukuran file disebut 2x di capture — respons SIZE (213 524288) dan respons RETR (150 ... (524288 bytes)) — konsisten.
+
+Catatan: ada percobaan login lain yang gagal (USER guest → 530 Login incorrect), tidak dipakai sebagai jawaban.
+
+Validasi
+bash
+nc 10.4.89.250 3403
+
+Soal 17 — Analisis HTTP C2 (wired_http_c2.pcap)
+Tujuan
+
+Temukan domain (Host), IP server penyerang, nama file malware, kode status HTTP.
+
+Langkah
+Buka file di Wireshark
+Filter:
+   http.request || http.response
+Cari paket GET /namafile HTTP/1.1 → expand Hypertext Transfer Protocol → cari Host: (domain)
+Lihat kolom Destination paket itu → IP server penyerang
+Nama file = bagian setelah slash terakhir pada path GET
+Cari paket response → baris pertama (HTTP/1.1 200 OK dsb) → kode status
+Verifikasi: File → Export Objects → HTTP
+Temuan
+
+Validasi
+bash
+nc 10.4.89.250 3404
+
+Soal 18 — Analisis SMB Transfer (wired_smb_transfer.pcapng)
+Tujuan
+
+Temukan protokol yang dieksploitasi, IP pengirim & penerima, folder tujuan, nama file malware.
+
+Langkah
+Buka file di Wireshark
+Filter:
+   smb2
+
+(kalau kosong, coba smb) 3. Cari paket "Create Request" → lihat Source (pengirim) & Destination (penerima) 4. Expand detail, cari field Filename → berisi path folder + nama file 5. Verifikasi: File → Export Objects → SMB
+
+Temuan
+
+[isi setelah dianalisis: protokol, IP pengirim, IP penerima, folder tujuan, nama file]
+
+Validasi
+bash
+nc 10.4.89.250 3405
+
 19. Eiri meneror jaringan dengan mengirimkan email pemerasan melalui protokol SMTP tanpa enkripsi. Analisis file capture `wired_smtp_threat.pcap` pada stream TCP terkait, identifikasi alamat email korban yang ditargetkan, password korban yang diklaim bocor oleh penyerang, jenis malware yang diinfeksikan, batas waktu dalam hari yang diberikan, serta MailClientID yang tercantum pada pesan. Validasi temuan pada socket server menggunakan `nc [IP_Group] 3406`.
 
 File capture dibuka melalui Wireshark. Trafik penyerang dapat dicari menggunakan filter berikut:
@@ -379,6 +552,19 @@ nc 10.4.89.246 3406
 | TCP stream | `6` |
 | Validasi socket | Berhasil |
 
+Soal 20 — Analisis & Dekripsi TLS (wired_tls_decrypt.pcapng)
+Tujuan
+
+Dekripsi trafik TLS pakai keylog file. Temukan versi TLS, SNI, IP server, User-Agent, HTTP method+path tersembunyi.
+
+Langkah
+Buka wired_tls_decrypt.pcapng di Wireshark
+Setup keylog: Edit → Preferences → Protocols → TLS → (Pre)-Master-Secret log filename → browse ke keyslogfile.txt → OK
+Cek dekripsi berhasil: filter http — kalau muncul paket, dekripsi sukses
+Versi TLS: filter tls.handshake.type == 1 (Client Hello) → expand → field Version
+SNI: masih di Client Hello yang sama → expand Extension: server_name → Server Name
+IP server: kolom Destination pada paket Client Hello yang sama
+User-Agent, method, path: filter http.request → expand Hypertext Transfer Protocol → baris GET /path HTTP/1.1 (method+path) dan User-Agent:
 
 ## Kesimpulan
 
