@@ -61,6 +61,10 @@ Pengujian dilakukan dengan mengirim ping antarclient yang berada pada subnet ber
 
 ## 4. Konfigurasi NAT dan DNS Clien
 
+Pada percobaan ini, semua client yaitu Alice, Mika, Chisa, Knights, dan Eiri dikonfigurasi agar dapat mengakses internet melalui NAT yang terdapat pada Router Lain.
+
+Konfigurasi IP dilakukan pada masing-masing interface yang terhubung ke client. Setelah itu, IP forwarding diaktifkan agar Router Lain dapat meneruskan paket dari jaringan client ke internet.
+
 [Tuliskan konfigurasi yang dilakukan dan hasil pengujiannya secara singkat.]
 
 > **[LETAKKAN SCREENSHOT NOMOR 4 DI SINI]**  
