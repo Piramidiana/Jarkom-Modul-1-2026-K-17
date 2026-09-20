@@ -110,7 +110,7 @@ ping -c 4 google.com
 ```
 <img width="1022" height="1107" alt="4_readme" src="https://github.com/user-attachments/assets/df3168bc-1384-480b-a60f-09f10f738295" />
 
-## 5. [Judul Soal Nomor 5]
+## 5. Cek Status & Persistensi Konfigurasi
 
 Tujuan: Konfigurasi jaringan dibuat tetap ada setelah node di-restart, dan dibuat script kecil untuk mengecek interface dan tabel NAT di Router Lain.
 
