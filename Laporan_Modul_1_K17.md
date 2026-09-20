@@ -236,7 +236,7 @@ Echo Request → Type 8, Code 0
 Echo Reply → Type 0, Code 0
 Statistik ping: packet loss & RTT (min/avg/max) dari output terminal
 
-Soal 11 — Kelemahan Telnet
+##Soal 11 — Kelemahan Telnet
 Tujuan
 
 Buktikan Telnet mengirim kredensial plaintext. Akun phantom_user/wired_ghost di Chisa, login dari Eiri, capture Wireshark.
@@ -267,11 +267,12 @@ Klik kanan paket → Follow → TCP Stream.
 
 Hasil
 
+<img width="959" height="594" alt="11 capturee" src="https://github.com/user-attachments/assets/23449763-ab9c-4776-ad0f-a84327657d8d" />
 
 
 Kredensial plaintext kelihatan jelas (phantom_user, wired_ghost), termasuk pola karakter dobel (local echo + remote echo dari server).
 
-Soal 12 — Port Scanning dengan Netcat
+##Soal 12 — Port Scanning dengan Netcat
 Tujuan
 
 Dari Alice, scan port 22 & 80 (harus terbuka) dan 7777 (harus tertutup) di Knights. Bandingkan TCP flag di Wireshark.
