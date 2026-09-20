@@ -236,7 +236,7 @@ Echo Request → Type 8, Code 0
 Echo Reply → Type 0, Code 0
 Statistik ping: packet loss & RTT (min/avg/max) dari output terminal
 
-##Soal 11 — Kelemahan Telnet
+## Soal 11 — Kelemahan Telnet
 Tujuan
 
 Buktikan Telnet mengirim kredensial plaintext. Akun phantom_user/wired_ghost di Chisa, login dari Eiri, capture Wireshark.
@@ -272,7 +272,7 @@ Hasil
 
 Kredensial plaintext kelihatan jelas (phantom_user, wired_ghost), termasuk pola karakter dobel (local echo + remote echo dari server).
 
-##Soal 12 — Port Scanning dengan Netcat
+## soal 12 — Port Scanning dengan Netcat
 Tujuan
 
 Dari Alice, scan port 22 & 80 (harus terbuka) dan 7777 (harus tertutup) di Knights. Bandingkan TCP flag di Wireshark.
@@ -315,7 +315,7 @@ tcp.flags.syn==1
 Port 22 & 80 → balasan Knights: Flags: SYN, ACK
 Port 7777 → balasan Knights: Flags: RST, ACK
 
-13. Lain memerintahkan agar administrasi jarak jauh menggunakan SSH secara aman tanpa password. Install OpenSSH server pada node Knights, buat pasangan kunci SSH (`ssh-keygen`) pada node Mika untuk user `mika_admin`, dan konfigurasikan public key authentication (`PasswordAuthentication no`). Lakukan koneksi SSH dari node Mika ke node Knights, tangkap sesi menggunakan Wireshark, identifikasi paket Protocol Version Exchange dan Key Exchange, serta jelaskan mengapa kredensial tidak terlihat dalam bentuk teks terbuka seperti pada Telnet.
+## 13. Lain memerintahkan agar administrasi jarak jauh menggunakan SSH secara aman tanpa password. Install OpenSSH server pada node Knights, buat pasangan kunci SSH (`ssh-keygen`) pada node Mika untuk user `mika_admin`, dan konfigurasikan public key authentication (`PasswordAuthentication no`). Lakukan koneksi SSH dari node Mika ke node Knights, tangkap sesi menggunakan Wireshark, identifikasi paket Protocol Version Exchange dan Key Exchange, serta jelaskan mengapa kredensial tidak terlihat dalam bentuk teks terbuka seperti pada Telnet.
 
 Pertama, dibuat pasangan public key dan private key ED25519 pada node Mika menggunakan perintah berikut:
 
@@ -389,7 +389,7 @@ Username, private key, dan isi sesi tidak terlihat karena SSH membuat session ke
 | Key Exchange | Client/Server Key Exchange Init dan PQ/T Hybrid Key Exchange |
 | Alasan kredensial tidak terbaca | Sesi SSH dienkripsi dan autentikasi menggunakan tanda tangan digital |
 
-14. Setelah gagal mengakses FTP, Eiri melancarkan serangan brute-force terhadap form login web Alice. Analisis file capture `wired_bruteforce.pcapng` untuk mengidentifikasi alamat IP penyerang, target IP beserta port yang diserang, password user `lain_admin` yang berhasil ditembus, serta web server software dan versi yang dilaporkan pada response header. Validasi temuan pada socket server menggunakan `nc [IP_Group] 3401`.
+## 14. Setelah gagal mengakses FTP, Eiri melancarkan serangan brute-force terhadap form login web Alice. Analisis file capture `wired_bruteforce.pcapng` untuk mengidentifikasi alamat IP penyerang, target IP beserta port yang diserang, password user `lain_admin` yang berhasil ditembus, serta web server software dan versi yang dilaporkan pada response header. Validasi temuan pada socket server menggunakan `nc [IP_Group] 3401`.
 
 File capture dibuka melalui Wireshark. Percobaan login yang berhasil ditemukan pada koneksi dengan source port `49203`. Filter berikut digunakan agar request dan response HTTP pada koneksi tersebut terlihat:
 
@@ -479,7 +479,7 @@ nc 10.4.89.246 3402
 | Pesan rahasia | `Wired_Protocol_7_is_alive_2026` |
 | Validasi socket | Berhasil |
 
-Soal 16 — Analisis FTP Theft (wired_ftp_theft.pcap)
+## Soal 16 — Analisis FTP Theft (wired_ftp_theft.pcap)
 Tujuan
 
 Dari file capture, temukan IP server FTP penyerang, banner, kredensial, dan ukuran file malware.
@@ -507,7 +507,7 @@ Validasi
 bash
 nc 10.4.89.250 3403
 
-Soal 17 — Analisis HTTP C2 (wired_http_c2.pcap)
+## Soal 17 — Analisis HTTP C2 (wired_http_c2.pcap)
 Tujuan
 
 Temukan domain (Host), IP server penyerang, nama file malware, kode status HTTP.
@@ -530,7 +530,7 @@ Validasi
 bash
 nc 10.4.89.250 3404
 
-Soal 18. — Analisis SMB Transfer (wired_smb_transfer.pcapng)
+## Soal 18. — Analisis SMB Transfer (wired_smb_transfer.pcapng)
 Tujuan
 
 Temukan protokol yang dieksploitasi, IP pengirim & penerima, folder tujuan, nama file malware.
@@ -551,7 +551,7 @@ Validasi
 bash
 nc 10.4.89.250 3405
 
-19. Eiri meneror jaringan dengan mengirimkan email pemerasan melalui protokol SMTP tanpa enkripsi. Analisis file capture `wired_smtp_threat.pcap` pada stream TCP terkait, identifikasi alamat email korban yang ditargetkan, password korban yang diklaim bocor oleh penyerang, jenis malware yang diinfeksikan, batas waktu dalam hari yang diberikan, serta MailClientID yang tercantum pada pesan. Validasi temuan pada socket server menggunakan `nc [IP_Group] 3406`.
+## 19. Eiri meneror jaringan dengan mengirimkan email pemerasan melalui protokol SMTP tanpa enkripsi. Analisis file capture `wired_smtp_threat.pcap` pada stream TCP terkait, identifikasi alamat email korban yang ditargetkan, password korban yang diklaim bocor oleh penyerang, jenis malware yang diinfeksikan, batas waktu dalam hari yang diberikan, serta MailClientID yang tercantum pada pesan. Validasi temuan pada socket server menggunakan `nc [IP_Group] 3406`.
 
 File capture dibuka melalui Wireshark. Trafik penyerang dapat dicari menggunakan filter berikut:
 
@@ -589,7 +589,7 @@ nc 10.4.89.246 3406
 | TCP stream | `6` |
 | Validasi socket | Berhasil |
 
-Soal 20 — Analisis & Dekripsi TLS (wired_tls_decrypt.pcapng)
+## Soal 20 — Analisis & Dekripsi TLS (wired_tls_decrypt.pcapng)
 
 Nomor 20 — Dekripsi TLS dengan Keylog
 
